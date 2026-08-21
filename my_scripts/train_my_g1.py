@@ -196,9 +196,34 @@ def main() -> int:
   stopper = _build_early_stopper(cfg)
   _install_ppo_hooks(stopper)
 
+  # 把实验目录链到 AutoDL 默认 TB 路径（:6007）
+  def _link_tf_logs_later() -> None:
+    tf_root = Path(os.environ.get("TF_LOGS", "/root/tf-logs"))
+    logs = MY_PARTY / "logs"
+    if not logs.is_dir():
+      return
+    # 最新实验目录
+    exps = sorted(
+        [p for p in logs.iterdir() if p.is_dir() and (p / "checkpoints").exists()],
+        key=lambda p: p.stat().st_mtime,
+    )
+    if not exps:
+      return
+    exp = exps[-1]
+    tf_root.mkdir(parents=True, exist_ok=True)
+    link = tf_root / exp.name
+    try:
+      if link.is_symlink() or not link.exists():
+        link.unlink(missing_ok=True)
+        link.symlink_to(exp.resolve())
+        print(f"[tb] linked {exp} -> {link}", flush=True)
+    except OSError as e:
+      print(f"[tb] link failed: {e}", flush=True)
+
   from learning.train_jax_ppo import run
 
   try:
+    _link_tf_logs_later()
     run()
   except EarlyStop as e:
     print(f"Done training (early stop): {e.reason}", flush=True)

@@ -8,6 +8,7 @@ num_envs: 32768
 batch_size: 512
 num_minibatches: 64
 num_evals: 40
+use_tb: true
 party_root: my_party
 
 # ---------- 断点续训 ----------

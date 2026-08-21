@@ -47,11 +47,20 @@ PY
 fi
 export RESUME RESUME_MODE TARGET_TIMESTEPS EARLY_STOP ENV_NAME
 
+USE_TB="${USE_TB:-$(python - <<PY
+import yaml
+c = yaml.safe_load(open("$CFG")) or {}
+print("1" if c.get("use_tb") else "0")
+PY
+)}"
+
 EXTRA_FLAGS=()
 [[ -n "${NUM_ENVS}" ]] && EXTRA_FLAGS+=(--num_envs "$NUM_ENVS")
 [[ -n "${BATCH_SIZE}" ]] && EXTRA_FLAGS+=(--batch_size "$BATCH_SIZE")
 [[ -n "${NUM_MINIBATCHES}" ]] && EXTRA_FLAGS+=(--num_minibatches "$NUM_MINIBATCHES")
 [[ -n "${NUM_EVALS}" ]] && EXTRA_FLAGS+=(--num_evals "$NUM_EVALS")
+[[ "${USE_TB}" == "1" || "${USE_TB}" == "true" ]] && EXTRA_FLAGS+=(--use_tb)
+echo "use_tb=$USE_TB"
 
 mkdir -p "$MY_PARTY_ROOT/logs" "$MY_PARTY_ROOT/checkpoints"
 LOG="$MY_PARTY_ROOT/logs/train_${ENV_NAME}_$(date +%Y%m%d_%H%M%S).log"
