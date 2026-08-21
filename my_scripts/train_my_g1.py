@@ -71,8 +71,12 @@ def _prepare_resume(argv: list[str], cfg: dict) -> list[str]:
     return argv
 
   step = checkpoint_step(ckpt)
+  # train_jax_ppo 对目录会 glob 子目录并 int(name)；须传 checkpoints/ 父目录，
+  # 不能传具体 step 目录（其下有 ocdbt.process_* 等非数字名）。
+  load_path = ckpt.parent if ckpt.parent.name == "checkpoints" else ckpt
   print(f"[resume] warm-start from {ckpt} (step={step})", flush=True)
-  argv = list(argv) + [f"--load_checkpoint_path={ckpt}"]
+  print(f"[resume] load_checkpoint_path={load_path}", flush=True)
+  argv = list(argv) + [f"--load_checkpoint_path={load_path}"]
 
   # remaining: train only until target_timesteps (additional env steps)
   target = os.environ.get("TARGET_TIMESTEPS")

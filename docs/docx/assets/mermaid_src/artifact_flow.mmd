@@ -1,0 +1,18 @@
+flowchart TB
+  subgraph party [my_party 产物]
+    L[logs/实验目录]
+    C[checkpoints/步数目录]
+    T[events.out.tfevents]
+  end
+  subgraph scripts [my_scripts]
+    R[run_train.sh]
+    V[view_my_policy.py]
+    TB[run_tensorboard.sh]
+  end
+  R --> L
+  L --> C
+  L --> T
+  C --> V
+  T --> TB
+  V --> P6006[端口 6006 mjviser]
+  TB --> P6008[端口 6008 TensorBoard]

@@ -1,0 +1,13 @@
+flowchart LR
+  A[配置 train_g1.yaml] --> B[run_train.sh]
+  B --> C[train_my_g1.py]
+  C --> D{RESUME?}
+  D -->|off| E[全新 PPO]
+  D -->|auto| F[热启动 checkpoint]
+  F --> E
+  E --> G[MJX 并行仿真]
+  G --> H[Brax PPO 更新]
+  H --> I[eval / TB / ckpt]
+  I --> J{早停?}
+  J -->|否| G
+  J -->|是| K[结束]

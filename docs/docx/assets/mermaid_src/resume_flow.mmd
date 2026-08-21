@@ -1,0 +1,11 @@
+flowchart LR
+  A[意外中断] --> B[检查 commit_success]
+  B --> C[RESUME=auto]
+  C --> D[解析最新数字目录]
+  D --> E[传 checkpoints 父目录]
+  E --> F[load 权重+归一化]
+  F --> G{resume_mode}
+  G -->|remaining| H[num_timesteps=目标-已训]
+  G -->|additional| I[再训完整 num_timesteps]
+  H --> J[新实验目录继续训]
+  I --> J
