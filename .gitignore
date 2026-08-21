@@ -4,3 +4,9 @@ __pycache__/
 logs/
 *.log
 .DS_Store
+
+# RL train artifacts
+g1_rl_train/logs/
+g1_rl_train/checkpoints/
+**/__pycache__/
+**/.ipynb_checkpoints/

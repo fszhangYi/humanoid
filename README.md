@@ -58,6 +58,8 @@ python scripts/walk_g1.py --port 6008 --vx 0.5
 
 - [当前如何实现 G1 在 MuJoCo 中走路（详解）](docs/01_G1_MuJoCo行走实现详解.md)
 - [训练自有策略：环境与步骤](docs/02_训练自有策略_环境与步骤.md)
+- 方案 B 训练工程：`g1_rl_train/README.md`
+- **方案 B 手把手复现教程：** `docs/03_G1_MJX_RL训练环境_手把手教程.md`
 
 若 6008 被占用：
 
