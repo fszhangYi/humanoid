@@ -1,0 +1,13 @@
+# 自有策略训练默认参数（由 my_scripts/run_train.sh 读取）
+env_name: G1JoystickFlatTerrain
+# 正式长训请把 num_timesteps 提到 5e7～2e8；冒烟/测速用较小值
+num_timesteps: 2000000
+num_videos: 0
+# 并行环境（须满足 batch_size * num_minibatches % num_envs == 0）
+# 5090D 冒烟：8192→~5k sps；16384→~6.2k/@4.8GB；65536→~6.1k/@17GB
+# 结论：再堆 envs 几乎不提速，32768 作默认（显存约 ~9–11GB，留余量给其它进程）
+num_envs: 32768
+batch_size: 512
+num_minibatches: 64
+num_evals: 20
+party_root: my_party
