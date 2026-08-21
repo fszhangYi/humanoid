@@ -1,13 +1,30 @@
-# 自有策略训练默认参数（由 my_scripts/run_train.sh 读取）
+# 自有策略训练默认参数（由 my_scripts/run_train.sh / train_my_g1.py 读取）
 env_name: G1JoystickFlatTerrain
-# 正式长训请把 num_timesteps 提到 5e7～2e8；冒烟/测速用较小值
-num_timesteps: 2000000
+# 正式长训：2.7e8 ≈ 本机 ~1.5h；冒烟可用 2e6
+num_timesteps: 270000000
 num_videos: 0
 # 并行环境（须满足 batch_size * num_minibatches % num_envs == 0）
-# 5090D 冒烟：8192→~5k sps；16384→~6.2k/@4.8GB；65536→~6.1k/@17GB
-# 结论：再堆 envs 几乎不提速，32768 作默认（显存约 ~9–11GB，留余量给其它进程）
 num_envs: 32768
 batch_size: 512
 num_minibatches: 64
-num_evals: 20
+num_evals: 40
 party_root: my_party
+
+# ---------- 断点续训 ----------
+# off | auto | 具体路径（实验目录 / checkpoints / 某个 step 目录）
+resume: off
+# additional: 再训 num_timesteps 步（热启动权重）
+# remaining: 只训到 target_timesteps（自动算剩余）
+resume_mode: additional
+# remaining 模式用；也可环境变量 TARGET_TIMESTEPS
+target_timesteps: 270000000
+
+# ---------- 智能早停 ----------
+early_stop:
+  enabled: true
+  metric_key: eval/episode_reward
+  mode: max
+  patience: 6          # 连续 N 次 eval 无提升则停
+  min_delta: 0.05      # 小于该幅度不算提升
+  min_evals: 4         # 至少完成这么多次训练后 eval 才允许早停
+  # target: 5.0        # 可选：达到该 reward 也停
